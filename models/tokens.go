@@ -9,7 +9,7 @@ import (
 )
 
 type Tokens struct {
-	Id   int64  `orm:"pk"` // id 需要手动创建，其内容是一个时间戳
+	Id   string `orm:"pk"` // id 需要手动创建，其内容是一个时间戳
 	User *Users `orm:"rel(fk)"`
 }
 
@@ -31,14 +31,14 @@ func CreateToken(user *Users) (string, error) {
 
 	// 生成 Token
 	claims := make(jwt.MapClaims)
-	tid := time.Now().Unix()
+	tid := strconv.FormatInt(time.Now().Unix(), 10)
 	claims["uid"] = user.Id
 	claims["tid"] = tid
 	jwtExpiresTime, _ := strconv.Atoi(beego.AppConfig.String("jwtExpiresTime"))
 	claims["exp"] = time.Now().Add(time.Duration(jwtExpiresTime) * time.Millisecond).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	jwtSecret := beego.AppConfig.String("jwtSecret")
-	tokenString, err := token.SignedString([]byte(jwtSecret))
+	secret := beego.AppConfig.String("jwtSecret")
+	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", nil
 	}

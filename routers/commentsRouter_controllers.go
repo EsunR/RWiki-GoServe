@@ -9,6 +9,15 @@ func init() {
 
     beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"],
         beego.ControllerComments{
+            Method: "Login",
+            Router: `/login`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"],
+        beego.ControllerComments{
             Method: "Register",
             Router: `/register`,
             AllowHTTPMethods: []string{"post"},

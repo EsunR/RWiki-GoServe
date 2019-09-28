@@ -6,8 +6,8 @@ import (
 )
 
 // 传入上下文获取请求体中的数据
-func GetBody(ctx *context2.Context) map[string]string {
-	var body map[string]string
+func GetBody(ctx *context2.Context) map[string]interface{} {
+	var body map[string]interface{}
 	_ = json.Unmarshal(ctx.Input.RequestBody, &body)
 	return body
 }

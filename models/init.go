@@ -14,5 +14,5 @@ type GlobalController struct {
 func init() {
 	utils.DbLink()
 	orm.RegisterModel(new(Tokens), new(Users))
-	_ = orm.RunSyncdb("default", true, false)
+	_ = orm.RunSyncdb("default", false, false)
 }
