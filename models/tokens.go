@@ -1,9 +1,9 @@
 package models
 
 import (
+	"RWiki-GoServe/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/dgrijalva/jwt-go"
 	"strconv"
 	"time"
 )
@@ -14,7 +14,7 @@ type Tokens struct {
 }
 
 // 传入 uid 创建一个 Token 并返回
-func CreateToken(user *Users) (string, error) {
+func CreateTokenByUser(user *Users) (string, error) {
 	// 检查已有的 Token 是否已经达到极限
 	o := orm.NewOrm()
 	var tokens []*Tokens
@@ -30,18 +30,11 @@ func CreateToken(user *Users) (string, error) {
 	}
 
 	// 生成 Token
-	claims := make(jwt.MapClaims)
 	tid := strconv.FormatInt(time.Now().Unix(), 10)
-	claims["uid"] = user.Id
-	claims["tid"] = tid
-	jwtExpiresTime, _ := strconv.Atoi(beego.AppConfig.String("jwtExpiresTime"))
-	claims["exp"] = time.Now().Add(time.Duration(jwtExpiresTime) * time.Millisecond).Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secret := beego.AppConfig.String("jwtSecret")
-	tokenString, err := token.SignedString([]byte(secret))
-	if err != nil {
-		return "", nil
-	}
+	tokenString := utils.GenerateToken(map[string]interface{}{
+		"uid": user.Id,
+		"tid": tid,
+	})
 
 	// 插入 Token 到数据库
 	tokenData := Tokens{

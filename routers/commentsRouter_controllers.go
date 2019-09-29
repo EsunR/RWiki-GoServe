@@ -9,6 +9,15 @@ func init() {
 
     beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"],
         beego.ControllerComments{
+            Method: "GetUserInfo",
+            Router: `/getUserInfo`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"],
+        beego.ControllerComments{
             Method: "Login",
             Router: `/login`,
             AllowHTTPMethods: []string{"post"},
@@ -21,6 +30,33 @@ func init() {
             Method: "Register",
             Router: `/register`,
             AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:BaseController"],
+        beego.ControllerComments{
+            Method: "UpdateToken",
+            Router: `/updateToken`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["RWiki-GoServe/controllers:ProjectController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:ProjectController"],
+        beego.ControllerComments{
+            Method: "CreateProject",
+            Router: `/createProject`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["RWiki-GoServe/controllers:ProjectController"] = append(beego.GlobalControllerRouter["RWiki-GoServe/controllers:ProjectController"],
+        beego.ControllerComments{
+            Method: "GetProjectListByUid",
+            Router: `/getProjectListByUid`,
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

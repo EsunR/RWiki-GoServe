@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
+	"strconv"
+	"time"
 )
 
 // 由 Token 字符串 返回一个 Token map
@@ -18,4 +20,17 @@ func ParseToken(tokenString string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return token.Claims.(jwt.MapClaims), nil
+}
+
+func GenerateToken(payload map[string]interface{}) string {
+	claims := make(jwt.MapClaims)
+	for k, v := range payload {
+		claims[k] = v
+	}
+	jwtExpiresTime, _ := strconv.Atoi(beego.AppConfig.String("jwtExpiresTime"))
+	claims["exp"] = time.Now().Add(time.Duration(jwtExpiresTime) * time.Millisecond).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	secret := beego.AppConfig.String("jwtSecret")
+	tokenString, _ := token.SignedString([]byte(secret))
+	return "Bearer " + tokenString
 }

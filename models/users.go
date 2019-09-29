@@ -9,12 +9,14 @@ import (
 )
 
 type Users struct {
-	Id       int `orm:"auto"`
-	Identity string
-	Name     string    `orm:"unique"`
-	Created  time.Time `orm:"auto_now_add;type(datetime)"`
-	Tokens   []*Tokens `orm:"reverse(many)"`
-	Password string
+	Id           int `orm:"auto"`
+	Identity     string
+	Name         string    `orm:"unique"`
+	Created      time.Time `orm:"auto_now_add;type(datetime)"`
+	Tokens       []*Tokens `orm:"reverse(many)"`
+	Password     string
+	Projects     []*Projects `orm:"reverse(many)"`
+	JoinProjects []*Projects `orm:"reverse(many)"`
 }
 
 // 返回所有的用户
@@ -37,7 +39,7 @@ func AddOneUser(user *Users) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tokenString, err := CreateToken(user)
+	tokenString, err := CreateTokenByUser(user)
 	return tokenString, err
 }
 

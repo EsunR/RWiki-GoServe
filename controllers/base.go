@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"RWiki-GoServe/filters"
 	"RWiki-GoServe/models"
 	_struct "RWiki-GoServe/struct"
 	"RWiki-GoServe/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strconv"
+	"time"
 )
 
 type BaseController struct {
@@ -14,8 +17,41 @@ type BaseController struct {
 
 // @router /updateToken [get]
 func (c *BaseController) UpdateToken() {
-	//var resp _struct.Resp
+	// 此时 Token 是一个未过期并且有效的 Token，需要检测其是否即将过期，然后更新 Token
+	var resp _struct.Resp
+	now := time.Now().Unix()
+	tid, _ := strconv.ParseInt(filters.TokenData["tid"].(string), 10, 64)
+	// TODO: Token 在这里的更新机制存在问题
+	jwtExpiresTime, _ := strconv.ParseInt(beego.AppConfig.String("jwtExpiresTime"), 10, 64)
+	lastTime := jwtExpiresTime - (now-tid)*1000 // 剩余时间（毫秒）
+	if lastTime > 24*60*3600 {
+		// 如果Token剩余时间大于24小时，则无需更新Token
+		resp.Msg = "ok"
+		resp.Data = map[string]interface{}{
+			"update": false,
+		}
+	} else {
+		// 如果 Token 即将过期，则更新 Token
+		// 制定新的 tid
+		newTid := strconv.FormatInt(now, 10)
 
+		// 更新数据库中对应的 tid
+		var tokenModel models.Tokens
+		tokenModel.Id = filters.TokenData["tid"].(string)
+		o := orm.NewOrm()
+		_, _ = o.QueryTable("tokens").
+			Filter("id", filters.TokenData["tid"].(string)).
+			Update(orm.Params{"id": newTid})
+		// 生成新的 Token 返回
+		resp.Msg = "ok"
+		resp.Data = map[string]interface{}{
+			"token": utils.GenerateToken(map[string]interface{}{
+				"tid": newTid,
+				"uid": filters.TokenData["uid"],
+			}),
+		}
+	}
+	_ = c.Ctx.Output.JSON(resp, false, false)
 }
 
 // @router /register [post]
@@ -58,7 +94,7 @@ func (c *BaseController) Login() {
 		if utils.PwdCompare(password, user.Password) {
 			// 密码匹配成功
 			resp.Msg = "ok"
-			tokenString, _ := models.CreateToken(&user)
+			tokenString, _ := models.CreateTokenByUser(&user)
 			resp.Data = map[string]string{
 				"token": tokenString,
 			}
@@ -66,6 +102,20 @@ func (c *BaseController) Login() {
 			// 密码匹配失败
 			resp.Msg = "密码错误，请重试"
 		}
+	}
+	_ = c.Ctx.Output.JSON(resp, false, false)
+}
+
+// @router /getUserInfo [get]
+func (c *BaseController) GetUserInfo() {
+	var resp _struct.Resp
+	uid := int(filters.TokenData["uid"].(float64))
+	userInfo, err := models.GetUserInfo(uid)
+	if err != nil {
+		resp.Msg = "未找到该用户的任何信息"
+	} else {
+		resp.Msg = "ok"
+		resp.Data = userInfo
 	}
 	_ = c.Ctx.Output.JSON(resp, false, false)
 }

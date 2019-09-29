@@ -10,9 +10,8 @@ type GlobalController struct {
 	beego.Controller
 }
 
-
 func init() {
 	utils.DbLink()
-	orm.RegisterModel(new(Tokens), new(Users))
+	orm.RegisterModel(new(Tokens), new(Users), new(Projects), new(Articles))
 	_ = orm.RunSyncdb("default", false, false)
 }
