@@ -3,6 +3,7 @@ package controllers
 import (
 	"RWiki-GoServe/models"
 	_struct "RWiki-GoServe/struct"
+	"fmt"
 	"github.com/astaxie/beego"
 )
 
@@ -38,4 +39,19 @@ func (c *TestController) TestUsers() {
 		resp.Data = result
 	}
 	_ = c.Ctx.Output.JSON(resp, false, false)
+}
+
+// @router /testData [get]
+func (c *TestController) TestData() {
+	fmt.Println("test")
+	type User struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+	user := User{
+		Name: "huahua",
+		Age:  18,
+	}
+	c.Data["json"] = user
+	c.ServeJSON()
 }
