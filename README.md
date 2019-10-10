@@ -6,7 +6,7 @@
 
 [API Doc](https://documenter.getpostman.com/view/6817046/SVtU19PC?version=latest)
 
-[BeeGo 快速入门](./DOC/Quick Start.md)
+[BeeGo 快速入门](./doc/QuickStart.md)
 
-[BeeGo vs Koa](./DOC/BeeGo vs Koa.md)
+[BeeGo vs Koa](./doc/Beego_vs_Koa.md)
 
